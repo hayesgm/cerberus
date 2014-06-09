@@ -12,7 +12,7 @@ from user_data import get_user_data
 # Expected user data:
 # docker.repo: Docker repo to check
 
-syslog.syslog(syslog.LOG_WARNING, 'Monitoring docker container...')
+syslog.syslog(syslog.LOG_WARNING, 'Monitoring cerberus container...')
 
 user_data = get_user_data()
 
@@ -20,7 +20,7 @@ docker = user_data['docker']
 repo = docker['repo']
 
 # This script is going to poll to see if there's a an updated version of the repo available
-# If so, we'll restart the docker-container service
+# If so, we'll restart the cerberus-container service
 
 def get_running_container_version():
   syslog.syslog(syslog.LOG_WARNING, 'Checking running container version')
@@ -49,9 +49,9 @@ def get_available_container_version():
     return repo_info['id']
 
 while True: # infinite loop
-  service_info = check_output(['sudo','service','docker-container','status'])
+  service_info = check_output(['sudo','service','cerberus-container','status'])
 
-  if re.search('docker-container start/running, process \d+',service_info): # Ensure the service is running
+  if re.search('cerberus-container start/running, process \d+',service_info): # Ensure the service is running
     running_version = get_running_container_version()
     available_version = get_available_container_version()
 
@@ -59,9 +59,9 @@ while True: # infinite loop
 
     if available_version != None and running_version != None and available_version != running_version:
       # update service
-      syslog.syslog(syslog.LOG_WARNING, 'New version of %s (%s->%s), restarting docker-container' % (repo, running_version, available_version))
-      if call(['sudo','service', 'docker-container', 'restart']) != 0: # restart service
-        raise Exception("Failed to restart docker-container service")
+      syslog.syslog(syslog.LOG_WARNING, 'New version of %s (%s->%s), restarting cerberus-container' % (repo, running_version, available_version))
+      if call(['sudo','service', 'cerberus-container', 'restart']) != 0: # restart service
+        raise Exception("Failed to restart cerberus-container service")
       syslog.syslog(syslog.LOG_WARNING, 'Service restarted')
       # Note, we may want to wait for this to have time to start-up
       # We may also want to see docker starts correctly
