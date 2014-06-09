@@ -1,0 +1,41 @@
+{
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "us-east-1",
+      "source_ami": "ami-018c9568",
+      "instance_type": "c3.large",
+      "ssh_username": "ubuntu",
+      "ami_name": "shepherd {{isotime | clean_ami_name}}"
+    }
+  ],
+
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [ "mkdir /tmp/cerberus" ]
+    },
+    {
+      "type": "file",
+      "source": "scripts",
+      "destination": "/tmp/cerberus"
+    },
+    {
+      "type": "file",
+      "source": "conf",
+      "destination": "/tmp/cerberus"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo cp /tmp/cerberus/conf/* /etc/init/.",
+        "sudo mkdir -p /usr/local/bin/cerberus",
+        "sudo cp /tmp/cerberus/scripts/* /usr/local/bin/cerberus/."
+      ]
+    },
+    {
+      "type": "shell",
+      "script": "./init_script.sh"
+    }
+  ]
+}
