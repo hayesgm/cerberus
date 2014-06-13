@@ -11,3 +11,25 @@ Example Flow:
 3) Open port 6379 in the Security Group for the instance
 4) Start the instance
 5) When the instance has booted, visit: `http//<public-ip>:6379`
+
+## User Data JSON Spec
+
+```
+{
+  "docker": {
+    "repo": "<docker repo>",
+    "flags": ["<docker run flag>"]
+    "auth": "<base64 encoded docker auth>",
+    "email": "<docker email for auth>",
+  },
+
+  "notifications": {
+    "rest": "<http endpoint>",
+    "hipchat": { "token": "<hipchat api token>", "room": "<hipchat room id>"}
+  },
+
+  "init": "#!/bin/bash
+    echo 'My bash script'
+  "
+}
+```
