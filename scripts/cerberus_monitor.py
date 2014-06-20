@@ -38,15 +38,21 @@ def get_running_container_version():
 
 def get_available_container_version():
   syslog.syslog(syslog.LOG_WARNING, 'Checking available container version')
-  if call(['docker','pull',repo]) != 0: # pull current version
-    raise Exception("Failed to pull docker repo %s" % repo)
 
-  repo_info = json.loads(check_output(['docker','inspect',repo]))[0]
+  # Pull repository data from index using basic auth if nesc
+  request = urllib2.Request("https://index.docker.io/v1/repositories/%s/tags" % repo)
+  if docker.get('auth'):
+    request.add_header("Authorization", "Basic %s" % docker['auth'])   
+  
+  index_data_raw = urllib2.urlopen(request).read()
+  repo_info = json.loads(index_data_raw)
 
-  if not repo_info:
-    None
-  else:
-    return repo_info['id']
+  # TODO: We might want to make this more functional
+  for tag in repo_info:
+    if tag['name'] == 'latest': # TODO: tag reference
+      return tag['layer']
+
+  return None
 
 while True: # infinite loop
   service_info = check_output(['sudo','service','cerberus-container','status'])
@@ -57,7 +63,7 @@ while True: # infinite loop
 
     syslog.syslog(syslog.LOG_WARNING, 'Running version: %s, available_version %s' % (running_version, available_version))
 
-    if available_version != None and running_version != None and available_version != running_version:
+    if available_version != None and running_version != None and not running_version.startswith(available_version):
       # update service
       syslog.syslog(syslog.LOG_WARNING, 'New version of %s (%s->%s), restarting cerberus-container' % (repo, running_version, available_version))
       if call(['sudo','service', 'cerberus-container', 'restart']) != 0: # restart service

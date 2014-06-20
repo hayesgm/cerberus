@@ -33,3 +33,12 @@ Example Flow:
   "
 }
 ```
+
+### Building an Image
+
+To build an AMI, simply run: `packer build packer.json`.  This will assume you have AWS keys to build and AMI (which you will be charged for on your account).
+
+### Public AMI Builds
+
+TODO
+
