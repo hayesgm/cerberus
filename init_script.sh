@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This is going to be a simple script to our instance up to date
-sleep 5 # issues accessing apt-get?
+sleep 15 # issues accessing apt-get?
 
 # Update our package system
 sudo apt-get update -qq

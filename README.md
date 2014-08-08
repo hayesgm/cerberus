@@ -18,6 +18,7 @@ Example Flow:
 {
   "docker": {
     "repo": "<docker repo>",
+    "tag": "<repo tag, default: latest>",
     "flags": ["<docker run flag>"]
     "auth": "<base64 encoded docker auth>",
     "email": "<docker email for auth>",

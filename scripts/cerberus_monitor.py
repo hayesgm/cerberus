@@ -18,8 +18,9 @@ user_data = get_user_data()
 
 docker = user_data['docker']
 repo = docker['repo']
+tag = docker.get('tag', 'latest')
 
-# This script is going to poll to see if there's a an updated version of the repo available
+# This script is going to poll to see if there's a an updated version of the repo with tag available
 # If so, we'll restart the cerberus-container service
 
 def get_running_container_version():
@@ -49,7 +50,7 @@ def get_available_container_version():
 
   # TODO: We might want to make this more functional
   for tag in repo_info:
-    if tag['name'] == 'latest': # TODO: tag reference
+    if tag['name'] == tag:
       return tag['layer']
 
   return None
@@ -65,7 +66,7 @@ while True: # infinite loop
 
     if available_version != None and running_version != None and not running_version.startswith(available_version):
       # update service
-      syslog.syslog(syslog.LOG_WARNING, 'New version of %s (%s->%s), restarting cerberus-container' % (repo, running_version, available_version))
+      syslog.syslog(syslog.LOG_WARNING, 'New version of %s:%s (%s->%s), restarting cerberus-container' % (repo, tag, running_version, available_version))
       if call(['sudo','service', 'cerberus-container', 'restart']) != 0: # restart service
         raise Exception("Failed to restart cerberus-container service")
       syslog.syslog(syslog.LOG_WARNING, 'Service restarted')
