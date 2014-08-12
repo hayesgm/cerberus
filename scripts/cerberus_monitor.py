@@ -49,9 +49,9 @@ def get_available_container_version():
   repo_info = json.loads(index_data_raw)
 
   # TODO: We might want to make this more functional
-  for tag in repo_info:
-    if tag['name'] == tag:
-      return tag['layer']
+  for tag_info in repo_info:
+    if tag_info['name'] == tag:
+      return tag_info['layer']
 
   return None
 
